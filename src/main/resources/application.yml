@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: issue_ticket_manager
+  datasource:
+    url: jdbc:h2:mem:issue_ticket_manager;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: user
+    password: password
+  sql:
+    init:
+      encoding: UTF-8
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak-oidc:
+            provider: keycloak
+            client-id: example_oidc_app
+            client-name: example_oidc_app
+
+
+
+
+
+
