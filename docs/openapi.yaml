@@ -1,0 +1,739 @@
+openapi: 3.0.3
+info:
+  version: 0.0.1
+  title: 'issue management api'
+tags:
+  - name: auth
+    description: authentication with keycloak
+  - name: projects
+    description: manage projects
+  - name: members
+    description: manage members
+  - name: issues
+    description: manage issue tickets
+  - name: users
+    description: manage users
+paths:
+  /login/oidc/keycloak:
+    get:
+      tags:
+        - auth
+      summary: login
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OidcLoginUrlResponse'
+
+  /logout:
+    post:
+      tags:
+        - auth
+      summary: logout
+      responses:
+        '200':
+          description: 'succeeded'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+  /projects:
+    get:
+      tags:
+        - projects
+      summary: list
+      description: retrieve all project where the user belongs
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+    post:
+      tags:
+        - projects
+      summary: register
+      description: register project with members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: 'succeeded'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+  /projects/{project_id}:
+    get:
+      tags:
+        - projects
+      summary: retrieve
+      description: retrieve
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    put:
+      tags:
+        - projects
+      summary: update
+      description: update
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: "succeeded"
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    delete:
+      tags:
+        - projects
+      summary: delete
+      description: delete
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      responses:
+        '200':
+          description: "succeeded"
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+  /projects/{project_id}/members:
+    get:
+      tags:
+        - members
+      summary: retrieve all
+      description: retrieve all
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    post:
+      tags:
+        - members
+      summary: register
+      description: register
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+  /projects/{project_id}/members/{member_id}:
+    get:
+      tags:
+        - members
+      summary: retrieve
+      description: retrieve
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/MemberIdPathParam'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    put:
+      tags:
+        - members
+      summary: update
+      description: update
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/MemberIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+      responses:
+        '200':
+          description: 'succeeded'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    delete:
+      tags:
+        - members
+      summary: Delete member from project
+      description: Deletes a specific member from a project.
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/MemberIdPathParam'
+      responses:
+        '200':
+          description: 'succeeded'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+  /projects/{project_id}/issues-tickets:
+    get:
+      tags:
+        - issues
+      summary: retrieve all
+      description: retrieve all
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueTicket'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    post:
+      tags:
+        - issues
+      summary: register
+      description: register
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTicket'
+      responses:
+        '200':
+          description: 'succeeded'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+  /projects/{project_id}/issues-tickets/{issue_ticket_id}:
+    get:
+      tags:
+        - issues
+      summary: retrieve
+      description: retrieve
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/IssueTicketIdPathParam'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueTicket'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+    put:
+      tags:
+        - issues
+      summary: update
+      description: update
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/IssueTicketIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTicket'
+      responses:
+        '200':
+          description: 'succeeded'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+    delete:
+      tags:
+        - issues
+      summary: delete
+      description: delete
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/IssueTicketIdPathParam'
+      responses:
+        '200':
+          description: succeeded
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /projects/{project_id}/issues-tickets/{issue_ticket_id}/assign:
+    patch:
+      tags:
+        - issues
+      summary: assign
+      description: assign issue ticket to member
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/IssueTicketIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTicketAssignRequest'
+      responses:
+        '200':
+          description: succeeded
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /projects/{project_id}/issues-tickets/{issue_ticket_id}/staus:
+    patch:
+      tags:
+        - issues
+      summary: update status
+      description: update status
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPathParam'
+        - $ref: '#/components/parameters/IssueTicketIdPathParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTicketStatusUpdateRequest'
+      responses:
+        '200':
+          description: succeeded
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /users:
+    get:
+      tags:
+        - users
+      summary: retrieve given users
+      parameters:
+        - $ref: '#/components/parameters/UserIdsQueryParam'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+    post:
+      tags:
+        - users
+      summary: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - type: object
+                  required:
+                    - sub
+                  properties:
+                    sub:
+                      type: string
+                      example: 'T.B.D'
+      responses:
+        '200':
+          description: 'succeeded'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityResponse'
+
+  /users/{user_id}:
+    get:
+      tags:
+        - users
+      summary: retrieve
+      description: retrieve
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathPram'
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: retrieve
+      description: retrieve
+      responses:
+        '200':
+          description: 'succeeded'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+
+components:
+  schemas:
+    Project:
+      type: object
+      required:
+        - name
+        - is_archived
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        name:
+          type: string
+          example: 'sample project'
+        is_archived:
+          type: boolean
+          example: false
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+
+    Member:
+      type: object
+      required:
+        - project_id
+        - userId
+        - role
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        project_id:
+          $ref: '#/components/schemas/ObjectId'
+        user_id:
+          $ref: '#/components/schemas/ObjectId'
+        role:
+          type: string
+          enum:
+            - admin_user
+            - regular_user
+            - readonly_user
+          example: admin_user
+
+    IssueTicket:
+      type: object
+      required:
+        - project_id
+        - title
+        - description
+        - priority
+        - status
+        - reporter
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        project_id:
+          $ref: '#/components/schemas/ObjectId'
+        priority:
+          type: string
+          enum:
+            - highest
+            - high
+            - medium
+            - low
+            - lowest
+          example: medium
+        title:
+          type: string
+          example: 'sample title'
+        description:
+          type: string
+          example: 'hi.\n this is sample description.\n'
+        status:
+          $ref: '#/components/schemas/IssueTicketStatus'
+        reporter_user:
+          $ref: '#/components/schemas/ObjectId'
+        assignee_user:
+          $ref: '#/components/schemas/ObjectId'
+
+    IssueTicketStatus:
+      type: string
+      enum:
+        - created
+        - assigned
+        - in_progress
+        - addressed
+        - pending
+      example: assigned
+
+    User:
+      type: object
+      required:
+        - nickName
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        nickName:
+          type: string
+          example: 'john doe'
+
+    ObjectId:
+      type: string
+      format: uuid
+
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 'This is the sample error message.'
+
+    ValidationError:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            required:
+              - property
+              - message
+            properties:
+              property:
+                type: string
+                example: name
+              message:
+                type: string
+                example: "the length of name should be less than 255"
+
+    OidcLoginUrlResponse:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: url
+          example: http://localhost:9090/login
+
+    IssueTicketAssignRequest:
+      type: object
+      required:
+        - assignee_user
+      properties:
+        assignee_user:
+          $ref: '#/components/schemas/ObjectId'
+
+
+    IssueTicketStatusUpdateRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/IssueTicketStatus'
+
+  parameters:
+    UserIdsQueryParam:
+      in: query
+      name: user_ids
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/ObjectId'
+      required: false
+
+    UserIdPathPram:
+      in: path
+      name: user_id
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+      required: true
+
+    ProjectIdPathParam:
+      in: path
+      name: project_id
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+      required: true
+
+    MemberIdPathParam:
+      in: path
+      name: member_id
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+      required: true
+
+    IssueTicketIdPathParam:
+      in: path
+      name: issue_ticket_id
+      schema:
+        $ref: '#/components/schemas/ObjectId'
+      required: true
+
+  responses:
+    BadRequestResponse:
+      description: 'Bad Request'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    UnauthorizedResponse:
+      description: 'Unauthorized'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    ForbiddenResponse:
+      description: 'Forbidden'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFoundResponse:
+      description: 'Not Found'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    UnprocessableEntityResponse:
+      description: 'Unprocessable Entity'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
