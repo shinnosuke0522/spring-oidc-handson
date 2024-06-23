@@ -3,8 +3,6 @@ info:
   version: 0.0.1
   title: 'issue management api'
 tags:
-  - name: auth
-    description: authentication with keycloak
   - name: projects
     description: manage projects
   - name: members
@@ -14,36 +12,17 @@ tags:
   - name: users
     description: manage users
 paths:
-  /login/oidc/keycloak:
-    get:
-      tags:
-        - auth
-      summary: login
-      responses:
-        '200':
-          description: 'succeeded'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OidcLoginUrlResponse'
-
-  /logout:
-    post:
-      tags:
-        - auth
-      summary: logout
-      responses:
-        '200':
-          description: 'succeeded'
-        '401':
-          $ref: '#/components/responses/UnauthorizedResponse'
-
   /projects:
     get:
       tags:
         - projects
+      operationId: projectList
       summary: list
       description: retrieve all project where the user belongs
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       responses:
         '200':
           description: 'succeeded'
@@ -52,14 +31,18 @@ paths:
               schema:
                 type: array
                 items:
-                    $ref: '#/components/schemas/Project'
+                  $ref: '#/components/schemas/Project'
         '401':
           $ref: '#/components/responses/UnauthorizedResponse'
     post:
       tags:
         - projects
+      operationId: projectRegister
       summary: register
       description: register project with members
+      security:
+        - openId:
+            - user_admin
       requestBody:
         content:
           application/json:
@@ -81,8 +64,13 @@ paths:
     get:
       tags:
         - projects
+      operationId: projectRetrieve
       summary: retrieve
       description: retrieve
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       responses:
@@ -100,8 +88,12 @@ paths:
     put:
       tags:
         - projects
+      operationId: projectUpdate
       summary: update
       description: update
+      security:
+        - openId:
+            - user_admin
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       requestBody:
@@ -124,8 +116,12 @@ paths:
     delete:
       tags:
         - projects
+      operationId: projectDelete
       summary: delete
       description: delete
+      security:
+        - openId:
+            - user_admin
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       responses:
@@ -146,8 +142,13 @@ paths:
     get:
       tags:
         - members
+      operationId: memberList
       summary: retrieve all
       description: retrieve all
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       responses:
@@ -167,8 +168,13 @@ paths:
     post:
       tags:
         - members
+      operationId: memberRegister
       summary: register
       description: register
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       requestBody:
@@ -198,8 +204,13 @@ paths:
     get:
       tags:
         - members
+      operationId: memberRetrieve
       summary: retrieve
       description: retrieve
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/MemberIdPathParam'
@@ -218,8 +229,13 @@ paths:
     put:
       tags:
         - members
+      operationId: memberUpdate
       summary: update
       description: update
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/MemberIdPathParam'
@@ -243,6 +259,7 @@ paths:
     delete:
       tags:
         - members
+      operationId: memberDelete
       summary: Delete member from project
       description: Deletes a specific member from a project.
       parameters:
@@ -260,8 +277,13 @@ paths:
     get:
       tags:
         - issues
+      operationId: issueTicketList
       summary: retrieve all
       description: retrieve all
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       responses:
@@ -281,8 +303,13 @@ paths:
     post:
       tags:
         - issues
+      operationId: issueTicketRegister
       summary: register
       description: register
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
       requestBody:
@@ -308,8 +335,13 @@ paths:
     get:
       tags:
         - issues
+      operationId: issueTicketRetrieve
       summary: retrieve
       description: retrieve
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/IssueTicketIdPathParam'
@@ -328,8 +360,13 @@ paths:
     put:
       tags:
         - issues
+      operationId: issueTicketUpdate
       summary: update
       description: update
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/IssueTicketIdPathParam'
@@ -355,8 +392,13 @@ paths:
     delete:
       tags:
         - issues
+      operationId: issueTicketDelete
       summary: delete
       description: delete
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/IssueTicketIdPathParam'
@@ -374,8 +416,13 @@ paths:
     patch:
       tags:
         - issues
+      operationId: issueTicketAssign
       summary: assign
       description: assign issue ticket to member
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/IssueTicketIdPathParam'
@@ -400,8 +447,13 @@ paths:
     patch:
       tags:
         - issues
+      operationId: issueTicketStatusUpdate
       summary: update status
       description: update status
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       parameters:
         - $ref: '#/components/parameters/ProjectIdPathParam'
         - $ref: '#/components/parameters/IssueTicketIdPathParam'
@@ -426,7 +478,11 @@ paths:
     get:
       tags:
         - users
+      operationId: userList
       summary: retrieve given users
+      security:
+        - openId:
+            - user_admin
       parameters:
         - $ref: '#/components/parameters/UserIdsQueryParam'
       responses:
@@ -444,7 +500,11 @@ paths:
     post:
       tags:
         - users
+      operationId: userRegister
       summary: register
+      security:
+        - openId:
+            - user_admin
       requestBody:
         content:
           application/json:
@@ -472,8 +532,12 @@ paths:
     get:
       tags:
         - users
+      operationId: userRetrieve
       summary: retrieve
       description: retrieve
+      security:
+        - openId:
+            - user_admin
       parameters:
         - $ref: '#/components/parameters/UserIdPathPram'
       responses:
@@ -492,8 +556,13 @@ paths:
     get:
       tags:
         - users
+      operationId: retrieveOwnUser
       summary: retrieve
       description: retrieve
+      security:
+        - openId:
+            - user_admin
+            - user_regular
       responses:
         '200':
           description: 'succeeded'
@@ -505,6 +574,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedResponse'
 
 components:
+  securitySchemes:
+    openId:
+      type: openIdConnect
+      openIdConnectUrl: "http://keycloakhost:keycloakport/realms/{realm}/.well-known/openid-configuration"
   schemas:
     Project:
       type: object
@@ -520,10 +593,6 @@ components:
         is_archived:
           type: boolean
           example: false
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/Member'
 
     Member:
       type: object
@@ -736,4 +805,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-
+security:
+  - openId:
+      - user_admin
+      - user_regular
